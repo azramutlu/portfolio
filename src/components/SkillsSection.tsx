@@ -3,23 +3,8 @@ import React, { useMemo, useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { config } from '@/config/environment';
-import dynamic from 'next/dynamic';
+import Spline from '@splinetool/react-spline';
 
-const Spline = dynamic(() => import('@splinetool/react-spline'), {
-  ssr: false,
-  loading: () => (
-    <div className="w-full h-full flex items-center justify-center bg-[rgba(57,62,70,0.8)] rounded-3xl">
-      <div className="text-center">
-        <motion.div 
-          className="w-12 h-12 border-4 border-[#84A8B4] border-t-transparent rounded-full mx-auto mb-4"
-          animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-        />
-        <p className="text-[rgba(238,238,238,0.75)] font-poppins">Loading 3D Scene...</p>
-      </div>
-    </div>
-  )
-});
 
 const SkillsSection: React.FC = () => {
   const [shouldLoadSpline, setShouldLoadSpline] = useState(false);
