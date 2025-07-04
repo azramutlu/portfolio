@@ -24,10 +24,10 @@ const HomePage = () => {
     setMobileMenuOpen(open)
   }, [])
 
-  const throttle = useCallback((func: Function, delay: number) => {
+  const throttle = useCallback(<T extends unknown[]>(func: (...args: T) => void, delay: number) => {
     let timeoutId: NodeJS.Timeout
     let lastExecTime = 0
-    return (...args: any[]) => {
+    return (...args: T) => {
       const currentTime = Date.now()
       if (currentTime - lastExecTime > delay) {
         func(...args)

@@ -1,5 +1,5 @@
 'use client';
-import React, { useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { config } from '@/config/environment';
