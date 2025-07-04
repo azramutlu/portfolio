@@ -1,8 +1,8 @@
 export const config = {
   // Personal Information
   brandName: process.env.NEXT_PUBLIC_BRAND_NAME || 'asradesign',
-  email: process.env.NEXT_PUBLIC_EMAIL || 'asra@design.com',
-  phone: process.env.NEXT_PUBLIC_PHONE || '+90 555 123 45 67',
+  email: process.env.NEXT_PUBLIC_EMAIL || 'asrammutlu@gmail.com',
+  phone: process.env.NEXT_PUBLIC_PHONE || '+905555555555',
   location: process.env.NEXT_PUBLIC_LOCATION || 'Istanbul, Turkey',
   
   // About Section
@@ -16,12 +16,8 @@ export const config = {
   
   // Social Media Links
   socialWebsite: process.env.NEXT_PUBLIC_SOCIAL_WEBSITE || '#',
-  socialPortfolio: process.env.NEXT_PUBLIC_SOCIAL_PORTFOLIO || '#',
-  socialLinkedin: process.env.NEXT_PUBLIC_SOCIAL_LINKEDIN || '#',
+  githubLink: process.env.NEXT_PUBLIC_GITHUB_LINK || '#',
   
-  // Action Links
-  cvDownloadLink: process.env.NEXT_PUBLIC_CV_DOWNLOAD_LINK || '#',
-  hireMeLink: process.env.NEXT_PUBLIC_HIRE_ME_LINK || '#',
   
   // SEO & Meta
   siteTitle: process.env.NEXT_PUBLIC_SITE_TITLE || 'Asra Design - Creative UI Designer',
