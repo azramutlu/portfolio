@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 /*
 	Installed from https://reactbits.dev/ts/tailwind/

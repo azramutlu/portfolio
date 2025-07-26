@@ -1,39 +1,68 @@
 'use client';
-import React, { useMemo, useState, useRef, useEffect } from 'react';
+import React, { useMemo, useState, useRef, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { config } from '@/config/environment';
-import Spline from '@splinetool/react-spline';
+import dynamic from 'next/dynamic';
+
+const Spline = dynamic(() => import('@splinetool/react-spline'), {
+  ssr: false,
+  loading: () => null
+});
 
 
 const SkillsSection: React.FC = () => {
   const [shouldLoadSpline, setShouldLoadSpline] = useState(false);
   const [isSplineLoaded, setIsSplineLoaded] = useState(false);
+  const [splineError, setSplineError] = useState(false);
+  const [userPrefers3D, setUserPrefers3D] = useState(true);
   const splineRef = useRef<HTMLDivElement>(null);
+  const observerRef = useRef<IntersectionObserver | null>(null);
+
+  const handleSplineLoad = useCallback(() => {
+    setIsSplineLoaded(true);
+    setSplineError(false);
+  }, []);
+
+  const handleSplineError = useCallback(() => {
+    setSplineError(true);
+    setIsSplineLoaded(false);
+  }, []);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const isLowEndDevice = navigator.hardwareConcurrency && navigator.hardwareConcurrency < 4;
+    
+    if (prefersReducedMotion || isLowEndDevice) {
+      setUserPrefers3D(false);
+      return;
+    }
+
+    if (!splineRef.current || !userPrefers3D) return;
+
+    observerRef.current = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting && !shouldLoadSpline) {
+          if (entry.isIntersecting && !shouldLoadSpline && userPrefers3D) {
             setTimeout(() => {
               setShouldLoadSpline(true);
-            }, 500);
+            }, 800);
+            observerRef.current?.disconnect();
           }
         });
       },
       { 
-        threshold: 0.1,
-        rootMargin: '200px'
+        threshold: 0.2,
+        rootMargin: '100px'
       }
     );
 
-    if (splineRef.current) {
-      observer.observe(splineRef.current);
-    }
+    observerRef.current.observe(splineRef.current);
 
-    return () => observer.disconnect();
-  }, [shouldLoadSpline]);
+    return () => {
+      observerRef.current?.disconnect();
+    };
+  }, [shouldLoadSpline, userPrefers3D]);
   const skillCardVariants = useMemo(() => ({
     initial: { y: 100, opacity: 0 },
     animate: { y: 0, opacity: 1 },
@@ -229,7 +258,7 @@ const SkillsSection: React.FC = () => {
             transition={{ duration: 0.8, delay: 0.3 }}
             viewport={{ once: true }}
           >
-            {!shouldLoadSpline ? (
+            {!shouldLoadSpline || !userPrefers3D || splineError ? (
               <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[rgba(57,62,70,0.9)] via-[rgba(132,168,180,0.1)] to-[rgba(57,62,70,0.9)] rounded-3xl relative overflow-hidden">
                 <motion.div 
                   className="absolute inset-0 bg-gradient-to-r from-[#84A8B4] via-transparent to-[#84A8B4] opacity-20"
@@ -285,15 +314,29 @@ const SkillsSection: React.FC = () => {
                       transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
                       style={{ backgroundSize: '200% 100%' }}
                     >
-                      Loading 3D Experience
+                      {splineError ? 'Interactive Preview' : !userPrefers3D ? 'Performance Mode' : 'Loading 3D Experience'}
                     </motion.h3>
                     <motion.p 
                       className="text-[rgba(238,238,238,0.6)] font-poppins text-sm"
                       animate={{ opacity: [0.6, 1, 0.6] }}
                       transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
                     >
-                      Preparing interactive elements...
+                      {splineError ? 'Unable to load 3D content' : !userPrefers3D ? 'Optimized for your device' : 'Preparing interactive elements...'}
                     </motion.p>
+                    {(splineError || !userPrefers3D) && (
+                      <motion.button
+                        onClick={() => {
+                          setUserPrefers3D(true);
+                          setSplineError(false);
+                          setShouldLoadSpline(true);
+                        }}
+                        className="mt-4 px-4 py-2 bg-[#84A8B4] text-white rounded-lg text-sm font-medium hover:bg-[#6d8a94] transition-colors"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        Enable 3D View
+                      </motion.button>
+                    )}
                   </motion.div>
                   
                   <motion.div className="flex justify-center space-x-1">
@@ -343,7 +386,13 @@ const SkillsSection: React.FC = () => {
               >
                 <Spline
                   scene="https://prod.spline.design/8g2w2YVQfw5X0-f7/scene.splinecode"
-                  onLoad={() => setIsSplineLoaded(true)}
+                  onLoad={handleSplineLoad}
+                  onError={handleSplineError}
+                  style={{ 
+                    width: '100%', 
+                    height: '100%',
+                    pointerEvents: isSplineLoaded ? 'auto' : 'none'
+                  }}
                 />
               </motion.div>
             )}
@@ -380,4 +429,4 @@ const SkillsSection: React.FC = () => {
   );
 };
 
-export default React.memo(SkillsSection); 
+export default React.memo(SkillsSection);

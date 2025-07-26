@@ -2,12 +2,19 @@
 import React, { useMemo } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
+import { useTypewriter, Cursor } from 'react-simple-typewriter';
 import { config } from '@/config/environment';
 
 const HeroSection: React.FC = () => {
-  const [typewriterText, setTypewriterText] = React.useState('');
-  const [currentWordIndex, setCurrentWordIndex] = React.useState(0);
-  const [isDeleting, setIsDeleting] = React.useState(false);
+  const [isMobile, setIsMobile] = React.useState(false);
+  
+  const [typewriterText] = useTypewriter({
+    words: ['CREATIVE', 'MODERN', 'INNOVATIVE', 'UNIQUE'],
+    loop: 0,
+    typeSpeed: 80,
+    deleteSpeed: 60,
+    delaySpeed: 2000
+  });
 
   const titleVariants = useMemo(() => ({
     initial: { opacity: 0 },
@@ -52,54 +59,16 @@ const HeroSection: React.FC = () => {
     animate: { x: 0, opacity: 1 }
   }), [])
 
-  const typewriterWords = useMemo(() => ["CREATIVE", "MODERN", "INNOVATIVE", "UNIQUE"], []);
-
   React.useEffect(() => {
-    let isMounted = true;
-    let timeoutId: NodeJS.Timeout;
-
-    const typeWriter = () => {
-      if (!isMounted) return;
-      
-      const currentWord = typewriterWords[currentWordIndex];
-      
-      if (isDeleting) {
-        setTypewriterText(prev => {
-          const newText = prev.slice(0, -1);
-          if (newText.length === 0) {
-            setIsDeleting(false);
-            setCurrentWordIndex(prev => (prev + 1) % typewriterWords.length);
-          }
-          return newText;
-        });
-        timeoutId = setTimeout(typeWriter, 50);
-      } else {
-        setTypewriterText(prev => {
-          const newText = currentWord.substring(0, prev.length + 1);
-          if (newText.length === currentWord.length) {
-            timeoutId = setTimeout(() => {
-              if (isMounted) {
-                setIsDeleting(true);
-                typeWriter();
-              }
-            }, 1500);
-          } else {
-            timeoutId = setTimeout(typeWriter, 100);
-          }
-          return newText;
-        });
-      }
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
     };
-
-    typeWriter();
-
-    return () => {
-      isMounted = false;
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
-    };
-  }, [currentWordIndex, isDeleting, typewriterWords]);
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   return (
     <main id="home" className="flex flex-col xl:grid xl:grid-cols-2 xl:gap-8 px-4 md:px-12 xl:px-0 pt-8 md:pt-16 xl:pt-0 min-h-[calc(100vh-120px)] xl:min-h-[calc(100vh-200px)]">
@@ -110,29 +79,30 @@ const HeroSection: React.FC = () => {
           initial="initial"
           animate="animate"
         >
-          <h1 className="font-poppins font-bold text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-[96px] leading-[1.1em] text-white max-w-full xl:w-[586px]">
+          <h1 className="font-poppins font-bold text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-[96px] leading-[1.2em] text-white max-w-full xl:w-[586px]">
             <motion.span
-              className="inline-block mr-1 sm:mr-2 md:mr-3 lg:mr-4 bg-gradient-to-r from-[#84A8B4] via-[#EEEEEE] to-[#84A8B4] bg-clip-text text-transparent"
+              className="inline-block mr-1 sm:mr-2 md:mr-3 lg:mr-4 bg-gradient-to-r from-[#84A8B4] via-[#EEEEEE] to-[#84A8B4] bg-clip-text text-transparent min-h-[1.2em] flex items-center"
               variants={wordVariants}
-              animate={{
+              animate={isMobile ? {} : {
                 backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
               }}
-              transition={{
+              transition={isMobile ? {} : {
                 duration: 3,
                 repeat: Infinity,
                 ease: 'linear'
               }}
               style={{
                 backgroundSize: '200% 100%',
-                filter: 'drop-shadow(0 0 10px rgba(132, 168, 180, 0.3))'
+                filter: isMobile ? 'none' : 'drop-shadow(0 0 10px rgba(132, 168, 180, 0.3))'
               }}
             >
-              {typewriterText}
+              <span>{typewriterText}</span>
+              <Cursor cursorStyle="|" cursorColor="#84A8B4" cursorBlinking={true} />
             </motion.span>
             <motion.span
               className="inline-block bg-gradient-to-r from-[#84A8B4] to-[#EEEEEE] bg-clip-text text-transparent"
               variants={wordVariants}
-              animate={{
+              animate={isMobile ? {} : {
                 textShadow: [
                   '0 0 10px rgba(132, 168, 180, 0.8)',
                   '0 0 20px rgba(132, 168, 180, 0.6)',
@@ -141,7 +111,7 @@ const HeroSection: React.FC = () => {
                   '0 0 10px rgba(132, 168, 180, 0.8)'
                 ]
               }}
-              transition={{
+              transition={isMobile ? {} : {
                 duration: 2,
                 repeat: Infinity,
                 ease: 'easeInOut'
@@ -150,21 +120,21 @@ const HeroSection: React.FC = () => {
               UI
             </motion.span>
             <motion.span
-              className="inline-block ml-1 sm:ml-2 md:ml-3 lg:ml-4"
+              className="inline-block ml-1 sm:ml-2 md:ml-3 lg:ml-4 whitespace-nowrap"
               variants={wordVariants}
-              animate={{
+              animate={isMobile ? {} : {
                 y: [0, -10, 0],
                 rotateX: [0, 15, 0],
                 scale: [1, 1.05, 1]
               }}
-              transition={{
+              transition={isMobile ? {} : {
                 duration: 2.5,
                 repeat: Infinity,
                 ease: 'easeInOut'
               }}
               style={{
                 color: '#EEEEEE',
-                textShadow: '0 0 20px rgba(238, 238, 238, 0.5)'
+                textShadow: isMobile ? 'none' : '0 0 20px rgba(238, 238, 238, 0.5)'
               }}
             >
               DESIGNER
@@ -184,7 +154,7 @@ const HeroSection: React.FC = () => {
             variants={buttonVariants}
             initial="initial"
             animate="animate"
-            whileHover={{
+            whileHover={isMobile ? {} : {
               scale: 1.05,
               boxShadow: '0 0 25px rgba(132, 168, 180, 0.6)',
               background: 'linear-gradient(45deg, #84A8B4, #6d8a94, #84A8B4)',
@@ -192,18 +162,20 @@ const HeroSection: React.FC = () => {
             }}
             whileTap="tap"
           >
-            <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0"
-              animate={{
-                x: ['-100%', '100%'],
-                opacity: [0, 0.3, 0]
-              }}
-              transition={{
-                duration: 1.5,
-                repeat: Infinity,
-                ease: 'easeInOut'
-              }}
-            />
+            {!isMobile && (
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0"
+                animate={{
+                  x: ['-100%', '100%'],
+                  opacity: [0, 0.3, 0]
+                }}
+                transition={{
+                  duration: 1.5,
+                  repeat: Infinity,
+                  ease: 'easeInOut'
+                }}
+              />
+            )}
             <span className="relative z-10">Github</span>
           </motion.a>
         </motion.div>
@@ -217,7 +189,7 @@ const HeroSection: React.FC = () => {
       >
         <motion.div 
           className="relative w-[280px] h-[260px] sm:w-[350px] sm:h-[324px] md:w-[420px] md:h-[389px] lg:w-[480px] lg:h-[444px] xl:w-[552px] xl:h-[511px]"
-          whileHover={{ 
+          whileHover={isMobile ? {} : { 
             scale: 1.02,
             rotateY: 5,
             transition: { duration: 0.3 }
@@ -264,4 +236,4 @@ const HeroSection: React.FC = () => {
   );
 };
 
-export default React.memo(HeroSection); 
+export default React.memo(HeroSection);
