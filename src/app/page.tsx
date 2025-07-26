@@ -5,6 +5,7 @@ import LoadingScreen from '@/components/LoadingScreen'
 import Header from '@/components/Header'
 import HeroSection from '@/components/HeroSection'
 import AboutSection from '@/components/AboutSection'
+import CurvedLoop from '@/components/CurvedLoop/CurvedLoop'
 import SkillsSection from '@/components/SkillsSection'
 import Footer from '@/components/Footer'
 import FloatingButton from '@/components/FloatingButton'
@@ -104,6 +105,24 @@ const HomePage = () => {
 
       <HeroSection />
       <AboutSection />
+      
+      <motion.div 
+        className="relative bg-[#222831] overflow-hidden"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        transition={{ duration: 1 }}
+        viewport={{ once: true }}
+      >
+        <CurvedLoop 
+          marqueeText="CREATIVE DESIGN ✦ MODERN UI ✦ INNOVATIVE SOLUTIONS ✦ UNIQUE EXPERIENCE ✦ "
+          speed={1.5}
+          className="text-[#84A8B4] font-bold"
+          curveAmount={300}
+          direction="right"
+          interactive={true}
+        />
+      </motion.div>
+      
       <SkillsSection />
       <Footer />
       
