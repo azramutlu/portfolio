@@ -3,12 +3,7 @@ import React, { useMemo, useState, useRef, useEffect, useCallback } from 'react'
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { config } from '@/config/environment';
-import dynamic from 'next/dynamic';
-
-const Spline = dynamic(() => import('@splinetool/react-spline'), {
-  ssr: false,
-  loading: () => null
-});
+import Spline from "@splinetool/react-spline";
 
 
 const SkillsSection: React.FC = () => {
