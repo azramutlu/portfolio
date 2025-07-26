@@ -52,22 +52,22 @@ const SkillsSection: React.FC = () => {
   const skills = useMemo(() => [
     {
       name: "Figma",
-      icon: "/figma-icon.svg",
+      icon: "/figma.png",
       description: "UI/UX Design & Prototyping"
     },
     {
       name: "Adobe Illustrator", 
-      icon: "/adobe-illustrator-icon.svg",
+      icon: "/adobe.png",
       description: "Vector Graphics & Illustrations"
     },
     {
       name: "React",
-      icon: "/react-icon.svg", 
+      icon: "/react.png", 
       description: "Frontend Development"
     },
     {
       name: "Next.js",
-      icon: "/nextjs-icon.svg",
+      icon: "/nextjs.png",
       description: "Full-Stack Framework"
     }
   ], [])
